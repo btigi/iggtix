@@ -57,7 +57,7 @@ namespace iggtix.Services
             await connection.OpenAsync();
             var addCommandQuery = @"DELETE FROM Commands WHERE Trigger = @trigger";
             using var addCommand = new SQLiteCommand(addCommandQuery, connection);
-            addCommand.Parameters.AddWithValue("@response", trigger);
+            addCommand.Parameters.AddWithValue("@trigger", trigger);
             await addCommand.ExecuteNonQueryAsync();
             await connection.CloseAsync();
             return true;

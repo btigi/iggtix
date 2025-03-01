@@ -40,7 +40,7 @@ namespace iggtix.Bot
             {
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
-                var response = command[2];
+                var response = string.Join(" ", command.Skip(1));
                 await _db.AddCommand(trigger, response);
                 return;
             }
@@ -55,18 +55,6 @@ namespace iggtix.Bot
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
                 await _db.DeleteCommand(trigger);
-                return;
-            }
-
-            if (message.Content == "#stepdaddy")
-            {
-                var broadcasterid = _config.GetValue<string>("broadcasterid");
-                var moderatorid = _config.GetValue<string>("moderatorid");
-                var chatters = await _twitchApi.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
-
-                var response = $"{message.Author}'s stepdaddy is {chatters.data.First().user_name}";
-
-                await message.ReplyWith(response);
                 return;
             }
 
@@ -93,22 +81,29 @@ namespace iggtix.Bot
                 return;
             }
 
-            if (message.Content == "#hello?")
-            {
-                await message.ReplyWith("hello <3");
-                return;
-            }
-
             if (message.Content.StartsWith('#'))
             {
                 var trigger = message.Content.Split(" ").First();
-                var command = await _db.GetCommand(trigger);
-                if (!string.IsNullOrEmpty(command))
+                var response = await _db.GetCommand(trigger);
+                if (!string.IsNullOrEmpty(response))
                 {
-                    await message.ReplyWith($"{command}");
+                    if (response.ToUpper().Contains("{CHATTER}"))
+                    {
+                        response = response.Replace("{chatter}", await GetChatter(), StringComparison.InvariantCultureIgnoreCase);
+                    }
+                    await message.ReplyWith($"{response}");
                 }
                 return;
             }
+        }
+
+        private async Task<string> GetChatter()
+        {
+            var broadcasterid = _config.GetValue<string>("broadcasterid");
+            var moderatorid = _config.GetValue<string>("moderatorid");
+            var chatters = await _twitchApi.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
+
+            return chatters.data.First().user_name;
         }
     }
 }
