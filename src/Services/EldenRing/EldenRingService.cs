@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace iggtix.Services.EldenRing
 {
-    public class EldenRingService
+    public class EldenRingService : IEldenRingService
     {
         public async Task<string> Handle(Privmsg message, IHttpClientFactory httpClientFactory)
         {

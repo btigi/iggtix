@@ -4,6 +4,7 @@ using MiniTwitch.Irc.Models;
 using iggtix.Api;
 using iggtix.Services;
 using iggtix.Services.EldenRing;
+using iggtix.Services.Lovecheck;
 
 namespace iggtix.Bot
 {
@@ -76,10 +77,17 @@ namespace iggtix.Bot
                 return;
             }
 
-
             if (message.Content == "#eldenringitem")
             {
                 var svc = new EldenRingService();
+                var result = await svc.Handle(message, _httpClientFactory);
+                await message.ReplyWith($"{result}");
+                return;
+            }
+
+            if (message.Content.StartsWith("#lovecheck"))
+            {
+                var svc = new LovecheckService();
                 var result = await svc.Handle(message, _httpClientFactory);
                 await message.ReplyWith($"{result}");
                 return;

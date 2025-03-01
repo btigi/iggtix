@@ -72,7 +72,7 @@ namespace iggtix.Services
             using var addCommand = new SQLiteCommand(addCommandQuery, connection);
             addCommand.Parameters.AddWithValue("@trigger", trigger);
             var dbResult = await addCommand.ExecuteScalarAsync();
-            var result = dbResult == DBNull.Value ? "" : dbResult.ToString();
+            var result = dbResult == null || dbResult == DBNull.Value ? "" : dbResult.ToString();
             await connection.CloseAsync();
             return result;
         }
