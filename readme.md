@@ -38,10 +38,11 @@ Run the application.
 The bot responds to the following commands by default:
 - #add #trigger response (mod only command)
 - #del #trigger (mod only command)
-- #stepdaddy - returns a random chatter
+- #lovecheck {user} - calculates a relationship between the invoking user and the target user
 - #userinfo - returns the bot's username
 - #eldenringitem - returns a random Elden Ring item
-- #hello? - returns 'hello'
+
+Note: The token {chatter} will be replaced with a random chatter from Twitch chat.
 
 ## Licencing
 
