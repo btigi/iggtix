@@ -6,26 +6,28 @@ namespace iggtix.Api
 {
     public class TwitchApiClient
     {
-        private readonly HttpClient client;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _client;
         private readonly ILogger<TwitchApiClient> _logger;
         private readonly IConfiguration _config;
 
-        public TwitchApiClient(HttpClient client, ILogger<TwitchApiClient> logger, IConfiguration config)
+        public TwitchApiClient(IHttpClientFactory httpClientFactory, ILogger<TwitchApiClient> logger, IConfiguration config)
         {
-            this.client = client;
+            _httpClientFactory = httpClientFactory;
+            _client = httpClientFactory.CreateClient();
             _logger = logger;
             _config = config;
 
-            client.BaseAddress = new Uri("https://api.twitch.tv/");
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.GetValue<string>("token")}");
-            client.DefaultRequestHeaders.Add("Client-Id", $"{_config.GetValue<string>("clientid")}");
+            _client.BaseAddress = new Uri("https://api.twitch.tv/");
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.GetValue<string>("token")}");
+            _client.DefaultRequestHeaders.Add("Client-Id", $"{_config.GetValue<string>("clientid")}");
         }
 
         public async Task<T> GetChatters<T>(string broadcasterid, string moderatorid)
         {
             try
             {
-                using HttpResponseMessage response = await client.GetAsync($"/helix/chat/chatters?broadcaster_id={broadcasterid}&moderator_id={moderatorid}");
+                using HttpResponseMessage response = await _client.GetAsync($"/helix/chat/chatters?broadcaster_id={broadcasterid}&moderator_id={moderatorid}");
                 response.EnsureSuccessStatusCode();
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"{jsonResponse}\n");
@@ -43,7 +45,7 @@ namespace iggtix.Api
         {
             try
             {
-                using HttpResponseMessage response = await client.GetAsync($"helix/users?login={loginName}");
+                using HttpResponseMessage response = await _client.GetAsync($"helix/users?login={loginName}");
                 response.EnsureSuccessStatusCode();
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"{jsonResponse}\n");
@@ -62,7 +64,7 @@ namespace iggtix.Api
             try
             {
                 var encodedToken = WebUtility.UrlEncode(refreshToken);
-                using var client = new HttpClient();
+                var client = _httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri("https://id.twitch.tv/oauth2/token");
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.GetValue<string>("token")}");
                 client.DefaultRequestHeaders.Add("Client-Id", $"{_config.GetValue<string>("clientid")}");
@@ -100,7 +102,7 @@ namespace iggtix.Api
         {
             try
             {
-                using var client = new HttpClient();
+                var client = _httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri("https://id.twitch.tv/oauth2/validate");
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_config.GetValue<string>("token")}");
 

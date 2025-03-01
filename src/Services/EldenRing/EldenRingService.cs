@@ -5,11 +5,11 @@ namespace iggtix.Services.EldenRing
 {
     public class EldenRingService
     {
-        public async Task<string> Handle(Privmsg message)
+        public async Task<string> Handle(Privmsg message, IHttpClientFactory httpClientFactory)
         {
             try
             {
-                using var client = new HttpClient();
+                var client = httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri("https://eldenring.fanapis.com/");
 
                 using HttpResponseMessage response = await client.GetAsync($"api/items?limit=50");

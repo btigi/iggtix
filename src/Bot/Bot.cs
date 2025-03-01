@@ -10,15 +10,17 @@ namespace iggtix.Bot
     public class Bot : IBot
     {
         public IrcClient Client { get; init; }
-        private readonly TwitchApiClient HttpClient;
-        private readonly IConfiguration Config;
-        private readonly IDB Db;
+        private readonly TwitchApiClient _twitchApi;
+        private readonly IConfiguration _config;
+        private readonly IDB _db;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public Bot(IConfiguration config, TwitchApiClient httpClient, IDB db)
+        public Bot(IConfiguration config, TwitchApiClient twitchApi, IDB db, IHttpClientFactory httpClientFactory)
         {
-            this.Config = config;
-            this.HttpClient = httpClient;
-            this.Db = db;
+            this._config = config;
+            this._twitchApi = twitchApi;
+            this._db = db;
+            this._httpClientFactory = httpClientFactory;
 
             db.InitializeDatabase();
 
@@ -38,7 +40,7 @@ namespace iggtix.Bot
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
                 var response = command[2];
-                await Db.AddCommand(trigger, response);
+                await _db.AddCommand(trigger, response);
                 return;
             }
 
@@ -51,15 +53,15 @@ namespace iggtix.Bot
             {
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
-                await Db.DeleteCommand(trigger);
+                await _db.DeleteCommand(trigger);
                 return;
             }
 
             if (message.Content == "#stepdaddy")
             {
-                var broadcasterid = Config.GetValue<string>("broadcasterid");
-                var moderatorid = Config.GetValue<string>("moderatorid");
-                var chatters = await HttpClient.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
+                var broadcasterid = _config.GetValue<string>("broadcasterid");
+                var moderatorid = _config.GetValue<string>("moderatorid");
+                var chatters = await _twitchApi.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
 
                 var response = $"{message.Author}'s stepdaddy is {chatters.data.First().user_name}";
 
@@ -69,7 +71,7 @@ namespace iggtix.Bot
 
             if (message.Content == "#userinfo")
             {
-                var userInfo = await HttpClient.GetUserInfo<UserInfoResponse>("iggtix");
+                var userInfo = await _twitchApi.GetUserInfo<UserInfoResponse>("iggtix");
                 await message.ReplyWith(userInfo.data.First().login);
                 return;
             }
@@ -78,7 +80,7 @@ namespace iggtix.Bot
             if (message.Content == "#eldenringitem")
             {
                 var svc = new EldenRingService();
-                var result = await svc.Handle(message);
+                var result = await svc.Handle(message, _httpClientFactory);
                 await message.ReplyWith($"{result}");
                 return;
             }
@@ -92,7 +94,7 @@ namespace iggtix.Bot
             if (message.Content.StartsWith('#'))
             {
                 var trigger = message.Content.Split(" ").First();
-                var command = await Db.GetCommand(trigger);
+                var command = await _db.GetCommand(trigger);
                 if (!string.IsNullOrEmpty(command))
                 {
                     await message.ReplyWith($"{command}");

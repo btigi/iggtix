@@ -30,7 +30,8 @@ _ = Console.ReadLine();
 
 static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
 {
-    services.AddHttpClient<TwitchApiClient>();
+    services.AddSingleton<TwitchApiClient>();
     services.AddSingleton<IBot, Bot>();
     services.AddSingleton<IDB, DB>();
+    services.AddHttpClient();
 }

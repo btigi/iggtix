@@ -4,6 +4,6 @@ namespace iggtix.Services.EldenRing
 {
     public interface IEldenRingService
     {
-        Task<string> Handle(Privmsg message);
+        Task<string> Handle(Privmsg message, IHttpClientFactory httpClientFactory);
     }
 }
