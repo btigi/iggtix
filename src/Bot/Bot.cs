@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-using MiniTwitch.Irc;
-using MiniTwitch.Irc.Models;
-using iggtix.Api;
+﻿using iggtix.Api;
 using iggtix.Services;
 using iggtix.Services.EldenRing;
 using iggtix.Services.Lovecheck;
+using Microsoft.Extensions.Configuration;
+using MiniTwitch.Irc;
+using MiniTwitch.Irc.Models;
 
 namespace iggtix.Bot
 {
@@ -15,6 +15,8 @@ namespace iggtix.Bot
         private readonly IConfiguration _config;
         private readonly IDB _db;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly Random _random;
+        private readonly string[] DefaultCommands = ["#adda", "#dela", "#add", "#del", "#userinfo", "#eldenringitem", "#lovecheck"];
 
         public Bot(IConfiguration config, TwitchApiClient twitchApi, IDB db, IHttpClientFactory httpClientFactory)
         {
@@ -22,6 +24,7 @@ namespace iggtix.Bot
             this._twitchApi = twitchApi;
             this._db = db;
             this._httpClientFactory = httpClientFactory;
+            _random = new Random();
 
             db.InitializeDatabase();
 
@@ -36,18 +39,44 @@ namespace iggtix.Bot
 
         private async ValueTask MessageEvent(Privmsg message)
         {
-            if (message.Content.StartsWith("#add") && message.Author.IsMod)
+            if (message.Content.StartsWith("#adda") && message.Author.IsMod)
+            {
+                var command = message.Content.Split(" ");
+                var trigger = command[1];
+                if (DefaultCommands.Contains(trigger, StringComparer.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                var response = string.Join(" ", command.Skip(1));
+                var exists = await _db.GetCommand(trigger);
+                if (exists.Count == default)
+                {
+                    await _db.AddCommand(trigger, string.Empty);
+                }
+                await _db.AddAncillary(trigger, response.Substring(trigger.Length).Trim());
+                return;
+            }
+
+            if (message.Content.StartsWith("#dela") && message.Author.IsMod)
             {
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
                 var response = string.Join(" ", command.Skip(1));
-                await _db.AddCommand(trigger, response);
+                await _db.DeleteAncillary(trigger, response.Substring(trigger.Length).Trim());
                 return;
             }
 
-            if (message.Content.StartsWith("#edit") && message.Author.IsMod)
+            if (message.Content.StartsWith("#add") && message.Author.IsMod)
             {
-
+                var command = message.Content.Split(" ");
+                var trigger = command[1];
+                if (DefaultCommands.Contains(trigger, StringComparer.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+                var response = string.Join(" ", command.Skip(1));
+                await _db.AddCommand(trigger, response);
+                return;
             }
 
             if (message.Content.StartsWith("#del") && message.Author.IsMod)
@@ -84,10 +113,11 @@ namespace iggtix.Bot
             if (message.Content.StartsWith('#'))
             {
                 var trigger = message.Content.Split(" ").First();
-                var response = await _db.GetCommand(trigger);
-                if (!string.IsNullOrEmpty(response))
+                var responses = await _db.GetCommand(trigger);
+                if (responses.Count > 0)
                 {
-                    if (response.ToUpper().Contains("{CHATTER}"))
+                    var response = responses[_random.Next(0, responses.Count)];
+                    if (response.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
                     {
                         response = response.Replace("{chatter}", await GetChatter(), StringComparison.InvariantCultureIgnoreCase);
                     }
