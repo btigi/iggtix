@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using MiniTwitch.Irc;
 using MiniTwitch.Irc.Models;
 using System.Reflection;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace iggtix.Bot
 {
@@ -16,7 +18,6 @@ namespace iggtix.Bot
         private readonly IConfiguration _config;
         private readonly IDB _db;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly Random _random;
         private readonly string[] DefaultCommands = ["#adda", "#dela", "#add", "#del", "#userinfo", "#lovecheck"];
 
         public Bot(IConfiguration config, TwitchApiClient twitchApi, IDB db, IHttpClientFactory httpClientFactory)
@@ -25,7 +26,6 @@ namespace iggtix.Bot
             this._twitchApi = twitchApi;
             this._db = db;
             this._httpClientFactory = httpClientFactory;
-            _random = new Random();
 
             db.InitializeDatabase();
 
@@ -109,8 +109,9 @@ namespace iggtix.Bot
                 var responses = await _db.GetCommand(trigger);
                 if (responses.Count > 0)
                 {
-                    var response = responses[_random.Next(0, responses.Count)];
-
+                    var seed = GenerateSeed(message.Author.Name, DateTime.Now.Date);
+                    var random = new Random(seed);
+                    var response = responses[random.Next(0, responses.Count)];
                     response = await RunPlugins(message, response);
 
                     if (response.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
@@ -121,6 +122,13 @@ namespace iggtix.Bot
                 }
                 return;
             }
+        }
+
+        private static int GenerateSeed(string username, DateTime date)
+        {
+            var input = username + date.ToString("yyyyMMdd");
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+            return BitConverter.ToInt32(hash, 0);
         }
 
         private async Task<string> GetChatter()
