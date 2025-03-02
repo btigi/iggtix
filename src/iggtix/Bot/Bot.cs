@@ -1,22 +1,23 @@
 ﻿using iggtix.Api;
 using iggtix.Services;
-using iggtix.Services.EldenRing;
 using iggtix.Services.Lovecheck;
 using Microsoft.Extensions.Configuration;
 using MiniTwitch.Irc;
 using MiniTwitch.Irc.Models;
+using System.Reflection;
 
 namespace iggtix.Bot
 {
     public class Bot : IBot
     {
         public IrcClient Client { get; init; }
+        public List<(string invokeName, object instance, MethodInfo method)> Plugins { get; set; }
         private readonly TwitchApiClient _twitchApi;
         private readonly IConfiguration _config;
         private readonly IDB _db;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly Random _random;
-        private readonly string[] DefaultCommands = ["#adda", "#dela", "#add", "#del", "#userinfo", "#eldenringitem", "#lovecheck"];
+        private readonly string[] DefaultCommands = ["#adda", "#dela", "#add", "#del", "#userinfo", "#lovecheck"];
 
         public Bot(IConfiguration config, TwitchApiClient twitchApi, IDB db, IHttpClientFactory httpClientFactory)
         {
@@ -47,13 +48,13 @@ namespace iggtix.Bot
                 {
                     return;
                 }
-                var response = string.Join(" ", command.Skip(1));
+                var response = string.Join(" ", command.Skip(2));
                 var exists = await _db.GetCommand(trigger);
                 if (exists.Count == default)
                 {
                     await _db.AddCommand(trigger, string.Empty);
                 }
-                await _db.AddAncillary(trigger, response.Substring(trigger.Length).Trim());
+                await _db.AddAncillary(trigger, response);
                 return;
             }
 
@@ -61,8 +62,8 @@ namespace iggtix.Bot
             {
                 var command = message.Content.Split(" ");
                 var trigger = command[1];
-                var response = string.Join(" ", command.Skip(1));
-                await _db.DeleteAncillary(trigger, response.Substring(trigger.Length).Trim());
+                var response = string.Join(" ", command.Skip(2));
+                await _db.DeleteAncillary(trigger, response);
                 return;
             }
 
@@ -74,7 +75,7 @@ namespace iggtix.Bot
                 {
                     return;
                 }
-                var response = string.Join(" ", command.Skip(1));
+                var response = string.Join(" ", command.Skip(2));
                 await _db.AddCommand(trigger, response);
                 return;
             }
@@ -94,14 +95,6 @@ namespace iggtix.Bot
                 return;
             }
 
-            if (message.Content == "#eldenringitem")
-            {
-                var svc = new EldenRingService();
-                var result = await svc.Handle(message, _httpClientFactory);
-                await message.ReplyWith($"{result}");
-                return;
-            }
-
             if (message.Content.StartsWith("#lovecheck"))
             {
                 var svc = new LovecheckService();
@@ -117,6 +110,9 @@ namespace iggtix.Bot
                 if (responses.Count > 0)
                 {
                     var response = responses[_random.Next(0, responses.Count)];
+
+                    response = await RunPlugins(message, response);
+
                     if (response.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
                     {
                         response = response.Replace("{chatter}", await GetChatter(), StringComparison.InvariantCultureIgnoreCase);
@@ -132,8 +128,31 @@ namespace iggtix.Bot
             var broadcasterid = _config.GetValue<string>("broadcasterid");
             var moderatorid = _config.GetValue<string>("moderatorid");
             var chatters = await _twitchApi.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
-
             return chatters.data.First().user_name;
+        }
+
+        private async Task<string> RunPlugins(Privmsg message, string response)
+        {
+            try
+            {
+                foreach (var plugin in Plugins)
+                {
+                    if (response.Contains($"{{p:{plugin.invokeName}}}", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory]);
+                        if (invokeResult is Task<string> task)
+                        {
+                            response = await task;
+                            Console.WriteLine(response);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception calling plugins: {ex.Message}");
+            }
+            return response;
         }
     }
 }

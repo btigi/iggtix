@@ -30,6 +30,7 @@ Set the following environment variables:
 - iggtix_clientid - bot clientid
 - iggtix_dbpath - path and filename to create the local SQLite database
 - iggtix_moderatorid - twitch user id of the moderator
+- iggtix_plugindir - plugin directory
 - iggtix_token - bot token
 - iggtix_username - bot username
 
@@ -42,9 +43,19 @@ The bot responds to the following commands by default:
 - #dela #trigger response (mod only command)
 - #lovecheck {user} - calculates a relationship between the invoking user and the target user
 - #userinfo - returns the bot's username
-- #eldenringitem - returns a random Elden Ring item
 
 Note: The token {chatter} will be replaced with a random chatter from Twitch chat.
+
+
+## Plugins
+Plugins can be added into the Plugin Directory. Plugins must implement the IIggtixCommand interface, from the IIggtixCommand assembly.
+
+Plugins are called in a non-deterministic order based on a message content marker, indicated as {p:Name}.
+
+As an example the included Elden Ring API plugin contains two Handlers, one replaces the input message the other amendtsw the input message.
+
+The first command would be called if the response contains {p:EldenRingApi} while the second command would be called if the response contains {p:EldenRingApi2}
+
 
 ## Licencing
 

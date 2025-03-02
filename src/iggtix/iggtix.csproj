@@ -18,4 +18,8 @@
     <PackageReference Include="MiniTwitch.Irc" Version="2.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\iggtix.Interface\iggtix.Interface.csproj" />
+  </ItemGroup>
+
 </Project>

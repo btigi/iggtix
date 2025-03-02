@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix", "iggtix.csproj", "{76C78E81-ABB8-4EC9-8C99-AD3A1B5AC484}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix", "iggtix\iggtix.csproj", "{76C78E81-ABB8-4EC9-8C99-AD3A1B5AC484}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.Interface", "iggtix.Interface\iggtix.Interface.csproj", "{ADA9CF10-E626-498D-9695-F449B6A264E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.EldenRing", "iggtix.EldenRing\iggtix.EldenRing.csproj", "{0F699D10-35BD-438A-95E4-2BB90113FA7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{76C78E81-ABB8-4EC9-8C99-AD3A1B5AC484}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76C78E81-ABB8-4EC9-8C99-AD3A1B5AC484}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76C78E81-ABB8-4EC9-8C99-AD3A1B5AC484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA9CF10-E626-498D-9695-F449B6A264E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA9CF10-E626-498D-9695-F449B6A264E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA9CF10-E626-498D-9695-F449B6A264E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA9CF10-E626-498D-9695-F449B6A264E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F699D10-35BD-438A-95E4-2BB90113FA7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F699D10-35BD-438A-95E4-2BB90113FA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F699D10-35BD-438A-95E4-2BB90113FA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F699D10-35BD-438A-95E4-2BB90113FA7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
