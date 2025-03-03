@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.EldenRing", "iggtix.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.rfc", "iggtix.rfc\iggtix.rfc.csproj", "{6E237935-FE81-4E50-A3FA-0F8C28F6A338}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.web", "iggtix.web\iggtix.web.csproj", "{624A9B65-2BFE-4BD6-907B-B4615E8A381E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6E237935-FE81-4E50-A3FA-0F8C28F6A338}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E237935-FE81-4E50-A3FA-0F8C28F6A338}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E237935-FE81-4E50-A3FA-0F8C28F6A338}.Release|Any CPU.Build.0 = Release|Any CPU
+		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
