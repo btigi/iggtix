@@ -38,8 +38,10 @@ Run the application.
 
 The bot responds to the following commands by default:
 - #add #trigger response (mod only command)
+- #addm #trigger response (mod only command)
 - #del #trigger (mod only command)
 - #adda #trigger response (mod only command)
+- #addam #trigger response (mod only command)
 - #dela #trigger response (mod only command)
 - #lovecheck {user} - calculates a relationship between the invoking user and the target user
 - #userinfo - returns the bot's username

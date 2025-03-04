@@ -23,6 +23,7 @@ namespace iggtix.Services
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Trigger TEXT NOT NULL,
                         Response TEXT NOT NULL,
+                        ModOnly INTEGER NOT NULL,
                         Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                         UNIQUE (Trigger)
                     )";
@@ -43,18 +44,19 @@ namespace iggtix.Services
             return true;
         }
 
-        public async Task<bool> AddCommand(string trigger, string response)
+        public async Task<bool> AddCommand(string trigger, string response, bool modOnly)
         {
             var dbPath = config.GetValue<string>("DbPath");
             using var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
             await connection.OpenAsync();
             //TODO: check unique?
             var addCommandQuery = @"
-                    INSERT INTO Commands (Trigger, Response)
-                    VALUES (@trigger, @response)";
+                    INSERT INTO Commands (Trigger, Response, ModOnly)
+                    VALUES (@trigger, @response, @modonly)";
             using var commandsCommand = new SQLiteCommand(addCommandQuery, connection);
             commandsCommand.Parameters.AddWithValue("@trigger", trigger);
             commandsCommand.Parameters.AddWithValue("@response", response);
+            commandsCommand.Parameters.AddWithValue("@modonly", modOnly);
             await commandsCommand.ExecuteNonQueryAsync();
             await connection.CloseAsync();
             return true;
@@ -73,13 +75,13 @@ namespace iggtix.Services
             return true;
         }
 
-        public async Task<List<string>> GetCommand(string trigger)
+        public async Task<List<(string text, bool modOnly)>> GetCommand(string trigger)
         {
             var dbPath = config.GetValue<string>("DbPath");
             using var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
             await connection.OpenAsync();
             var addCommandQuery = @"
-                    SELECT c.Response, a.Response as AncillaryResponse
+                    SELECT c.Response, a.Response as AncillaryResponse, c.ModOnly
                     FROM Commands c
                     LEFT JOIN Ancillary a ON c.Id = a.CommandId
                     WHERE 
@@ -87,12 +89,13 @@ namespace iggtix.Services
             using var addCommand = new SQLiteCommand(addCommandQuery, connection);
             addCommand.Parameters.AddWithValue("@trigger", trigger);
             var reader = await addCommand.ExecuteReaderAsync();
-            var results = new List<string>();
+            var results = new List<(string, bool)>();
             while (reader.Read())
             {
                 var ancillaryResponse = reader["AncillaryResponse"] != null && reader["AncillaryResponse"] != DBNull.Value ? reader["AncillaryResponse"].ToString() : null;
-                var response = reader["Response"] != null && reader["Response"] != DBNull.Value ? reader["Response"].ToString() : string.Empty;
-                results.Add(ancillaryResponse ?? response);
+                var response = reader["Response"] != null && reader["Response"] != DBNull.Value ? reader["Response"].ToString() : string.Empty;                
+                var modonly = reader["ModOnly"] != null && reader["ModOnly"] != DBNull.Value ? Convert.ToInt32(reader["ModOnly"]) : 0;
+                results.Add((ancillaryResponse ?? response, modonly == 1));
             }
             await connection.CloseAsync();
             return results;

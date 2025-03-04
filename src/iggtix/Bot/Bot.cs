@@ -18,7 +18,7 @@ namespace iggtix.Bot
         private readonly IConfiguration _config;
         private readonly IDB _db;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string[] DefaultCommands = ["#adda", "#dela", "#add", "#del", "#userinfo", "#lovecheck"];
+        private readonly string[] DefaultCommands = ["#adda", "#addam", "#dela", "#add", "#addm", "#del", "#userinfo", "#lovecheck"];
 
         public Bot(IConfiguration config, TwitchApiClient twitchApi, IDB db, IHttpClientFactory httpClientFactory)
         {
@@ -40,9 +40,10 @@ namespace iggtix.Bot
 
         private async ValueTask MessageEvent(Privmsg message)
         {
-            if (message.Content.StartsWith("#adda") && message.Author.IsMod)
+            if ((message.Content.StartsWith("#adda") || message.Content.StartsWith("#addam")) && message.Author.IsMod)
             {
                 var command = message.Content.Split(" ");
+                var type = command[0];
                 var trigger = command[1];
                 if (DefaultCommands.Contains(trigger, StringComparer.OrdinalIgnoreCase))
                 {
@@ -52,7 +53,7 @@ namespace iggtix.Bot
                 var exists = await _db.GetCommand(trigger);
                 if (exists.Count == default)
                 {
-                    await _db.AddCommand(trigger, string.Empty);
+                    await _db.AddCommand(trigger, string.Empty, type == "#addam");
                 }
                 await _db.AddAncillary(trigger, response);
                 return;
@@ -67,16 +68,17 @@ namespace iggtix.Bot
                 return;
             }
 
-            if (message.Content.StartsWith("#add") && message.Author.IsMod)
+            if ((message.Content.StartsWith("#add") || message.Content.StartsWith("#addm")) && message.Author.IsMod)
             {
                 var command = message.Content.Split(" ");
+                var type = command[0];
                 var trigger = command[1];
                 if (DefaultCommands.Contains(trigger, StringComparer.OrdinalIgnoreCase))
                 {
                     return;
                 }
                 var response = string.Join(" ", command.Skip(2));
-                await _db.AddCommand(trigger, response);
+                await _db.AddCommand(trigger, response, type == "#addm");
                 return;
             }
 
@@ -109,16 +111,19 @@ namespace iggtix.Bot
                 var responses = await _db.GetCommand(trigger);
                 if (responses.Count > 0)
                 {
-                    var seed = GenerateSeed(message.Author.Name, DateTime.Now.Date);
-                    var random = new Random(seed);
-                    var response = responses[random.Next(0, responses.Count)];
-                    response = await RunPlugins(message, response);
-
-                    if (response.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
+                    if ((responses.Any(a => a.modOnly) && message.Author.IsMod) || !responses.Any(a => a.modOnly))
                     {
-                        response = response.Replace("{chatter}", await GetChatter(), StringComparison.InvariantCultureIgnoreCase);
+                        var seed = GenerateSeed(message.Author.Name, DateTime.Now.Date);
+                        var random = new Random(seed);
+                        var response = responses[random.Next(0, responses.Count)];
+                        var text = await RunPlugins(message, response.text);
+
+                        if (text.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            text = text.Replace("{chatter}", await GetChatter(), StringComparison.InvariantCultureIgnoreCase);
+                        }
+                        await message.ReplyWith($"{text}");
                     }
-                    await message.ReplyWith($"{response}");
                 }
                 return;
             }
