@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.rfc", "iggtix.rfc\ig
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.web", "iggtix.web\iggtix.web.csproj", "{624A9B65-2BFE-4BD6-907B-B4615E8A381E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.CatholicDay", "iggtix.CatholicDay\iggtix.CatholicDay.csproj", "{89517D7A-134A-442D-9D7A-F2A0C93E0D13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{624A9B65-2BFE-4BD6-907B-B4615E8A381E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89517D7A-134A-442D-9D7A-F2A0C93E0D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89517D7A-134A-442D-9D7A-F2A0C93E0D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89517D7A-134A-442D-9D7A-F2A0C93E0D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89517D7A-134A-442D-9D7A-F2A0C93E0D13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
