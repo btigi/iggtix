@@ -41,9 +41,9 @@ static void ConfigureServices(HostBuilderContext hostContext, IServiceCollection
     services.AddHttpClient();
 }
 
-static List<(string invokeName, object instance, MethodInfo method)> Load(string pluginDirectory)
+static List<(string invokeName, object instance, MethodInfo method, PluginType pluginType)> Load(string pluginDirectory)
 {
-    var results = new List<(string invokeName, object instance, MethodInfo method)>();
+    var results = new List<(string invokeName, object instance, MethodInfo method, PluginType pluginType)>();
     try
     {
         foreach (var plugin in Directory.EnumerateFiles(pluginDirectory, "*.dll"))
@@ -56,12 +56,14 @@ static List<(string invokeName, object instance, MethodInfo method)> Load(string
             {
                 foreach (var classType in classTypes)
                 {
-                    var property = classType.GetProperty("Name");
+                    var NameProperty = classType.GetProperty("Name");
+                    var pluginTypeProperty = classType.GetProperty("PluginType");
                     var method = classType.GetMethod("Handle");
                     var instance = Activator.CreateInstance(classType);
-                    var result = property.GetValue(instance);
-                    Console.WriteLine(result);
-                    results.Add(((string)result, instance, method));
+                    var name = NameProperty.GetValue(instance);
+                    var pluginType = pluginTypeProperty.GetValue(instance);
+                    Console.WriteLine(name);
+                    results.Add(((string)name, instance, method, (PluginType)pluginType));
                 }
             }
         }

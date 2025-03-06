@@ -7,6 +7,8 @@ namespace iggtix.rfc
 {
     public class Handler1 : IIggtixCommand
     {
+        public PluginType PluginType => PluginType.Command;
+
         public string Name
         {
             get

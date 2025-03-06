@@ -7,13 +7,14 @@ using MiniTwitch.Irc.Models;
 using System.Reflection;
 using System.Text;
 using System.Security.Cryptography;
+using iggtix.Interface;
 
 namespace iggtix.Bot
 {
     public class Bot : IBot
     {
         public IrcClient Client { get; init; }
-        public List<(string invokeName, object instance, MethodInfo method)> Plugins { get; set; }
+        public List<(string invokeName, object instance, MethodInfo method, PluginType pluginType)> Plugins { get; set; }
         private readonly TwitchApiClient _twitchApi;
         private readonly IConfiguration _config;
         private readonly IDB _db;
@@ -40,6 +41,8 @@ namespace iggtix.Bot
 
         private async ValueTask MessageEvent(Privmsg message)
         {
+            await RunPluginsAll(message);
+
             if ((message.Content.StartsWith("#adda") || message.Content.StartsWith("#addam")) && message.Author.IsMod)
             {
                 var command = message.Content.Split(" ");
@@ -116,7 +119,7 @@ namespace iggtix.Bot
                         var seed = GenerateSeed(message.Author.Name, DateTime.Now.Date);
                         var random = new Random(seed);
                         var response = responses[random.Next(0, responses.Count)];
-                        var text = await RunPlugins(message, response.text);
+                        var text = await RunPluginsCommand(message, response.text);
 
                         if (text.Contains("{CHATTER}", StringComparison.CurrentCultureIgnoreCase))
                         {
@@ -144,11 +147,32 @@ namespace iggtix.Bot
             return chatters.data.First().user_name;
         }
 
-        private async Task<string> RunPlugins(Privmsg message, string response)
+        private async Task<string> RunPluginsAll(Privmsg message)
+        {
+            var response = string.Empty;
+            try
+            {
+                foreach (var plugin in Plugins.Where(w => w.pluginType == PluginType.AllMessages))
+                {
+                    var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory]);
+                    if (invokeResult is Task<string> task)
+                    {
+                        response = await task;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception calling plugins: {ex.Message}");
+            }
+            return response;
+        }
+
+        private async Task<string> RunPluginsCommand(Privmsg message, string response)
         {
             try
             {
-                foreach (var plugin in Plugins)
+                foreach (var plugin in Plugins.Where(w => w.pluginType == PluginType.Command))
                 {
                     if (response.Contains($"{{p:{plugin.invokeName}}}", StringComparison.CurrentCultureIgnoreCase))
                     {

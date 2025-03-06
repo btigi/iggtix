@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.CatholicDay", "iggti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.EvilInsult", "iggtix.EvilInsult\iggtix.EvilInsult.csproj", "{F8BB95D0-BF4E-4486-B344-88D3693A55B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.POSPrint", "iggtix.POSPrint\iggtix.POSPrint.csproj", "{4F5E3E12-D05B-4B01-A998-7E12595FA547}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{F8BB95D0-BF4E-4486-B344-88D3693A55B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8BB95D0-BF4E-4486-B344-88D3693A55B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8BB95D0-BF4E-4486-B344-88D3693A55B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F5E3E12-D05B-4B01-A998-7E12595FA547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F5E3E12-D05B-4B01-A998-7E12595FA547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F5E3E12-D05B-4B01-A998-7E12595FA547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F5E3E12-D05B-4B01-A998-7E12595FA547}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,8 @@ namespace iggtix.EldenRing
 {
     public class Handler1 : IIggtixCommand
     {
+        public PluginType PluginType => PluginType.Command;
+
         public string Name
         {
             get
@@ -44,6 +46,8 @@ namespace iggtix.EldenRing
 
     public class Handler2 : IIggtixCommand
     {
+        public PluginType PluginType => PluginType.Command;
+
         public string Name
         {
             get

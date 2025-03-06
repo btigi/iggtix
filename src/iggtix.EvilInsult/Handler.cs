@@ -6,6 +6,8 @@ namespace iggtix.EvilInsult
 {
     public class Handler1 : IIggtixCommand
     {
+        public PluginType PluginType => PluginType.Command;
+
         public string Name
         {
             get
