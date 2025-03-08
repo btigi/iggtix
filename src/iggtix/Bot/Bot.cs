@@ -141,9 +141,7 @@ namespace iggtix.Bot
 
         private async Task<string> GetChatter()
         {
-            var broadcasterid = _config.GetValue<string>("broadcasterid");
-            var moderatorid = _config.GetValue<string>("moderatorid");
-            var chatters = await _twitchApi.GetChatters<ChattersResponse>(broadcasterid, moderatorid);
+            var chatters = await _twitchApi.GetChatters<ChattersResponse>();
             return chatters.data.First().user_name;
         }
 
@@ -154,7 +152,7 @@ namespace iggtix.Bot
             {
                 foreach (var plugin in Plugins.Where(w => w.pluginType == PluginType.AllMessages))
                 {
-                    var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory]);
+                    var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory, _twitchApi]);
                     if (invokeResult is Task<string> task)
                     {
                         response = await task;
@@ -176,7 +174,7 @@ namespace iggtix.Bot
                 {
                     if (response.Contains($"{{p:{plugin.invokeName}}}", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory]);
+                        var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory, _twitchApi]);
                         if (invokeResult is Task<string> task)
                         {
                             response = await task;

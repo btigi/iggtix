@@ -25,7 +25,7 @@ namespace iggtix.POSPrint
             }
         }
 
-        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory)
+        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory, ITwitchApi twitchApi)
         {
             printer.Clear();
             printer.Append($"{message.Author.DisplayName}: {message.Content}");

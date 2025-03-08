@@ -17,7 +17,7 @@ namespace iggtix.rfc
             }
         }
 
-        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory)
+        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory, ITwitchApi twitchApi)
         {
             var seed = GenerateSeed(message.Author.Name, DateTime.Now.Date);
             var random = new Random(seed);

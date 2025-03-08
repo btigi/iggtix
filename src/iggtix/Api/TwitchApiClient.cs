@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using iggtix.Interface;
+using iggtix.Interface.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
 namespace iggtix.Api
 {
-    public class TwitchApiClient
+    public class TwitchApiClient : ITwitchApi
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HttpClient _client;
@@ -23,10 +25,32 @@ namespace iggtix.Api
             _client.DefaultRequestHeaders.Add("Client-Id", $"{_config.GetValue<string>("clientid")}");
         }
 
-        public async Task<T> GetChatters<T>(string broadcasterid, string moderatorid)
+
+        public async Task<ChannelInfo> GetChannelInfo()
         {
             try
             {
+                var broadcasterid = _config.GetValue<string>("broadcasterid");
+                using HttpResponseMessage response = await _client.GetAsync($"/helix/channels?broadcaster_id={broadcasterid}");
+                response.EnsureSuccessStatusCode();
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"{jsonResponse}\n");
+                var result = System.Text.Json.JsonSerializer.Deserialize<ChannelInfo>(jsonResponse);
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError($"An error occurred connecting to Twitch API {ex}");
+                throw;
+            }
+        }
+
+        public async Task<T> GetChatters<T>()
+        {
+            try
+            {
+                var broadcasterid = _config.GetValue<string>("broadcasterid");
+                var moderatorid = _config.GetValue<string>("moderatorid");
                 using HttpResponseMessage response = await _client.GetAsync($"/helix/chat/chatters?broadcaster_id={broadcasterid}&moderator_id={moderatorid}");
                 response.EnsureSuccessStatusCode();
                 var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -124,4 +148,8 @@ namespace iggtix.Api
             }
         }
     }
+
+
+
+
 }

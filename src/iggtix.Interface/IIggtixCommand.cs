@@ -6,7 +6,7 @@ namespace iggtix.Interface
     {
         PluginType PluginType { get; }
         string Name { get; }
-        Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory);
+        Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory, ITwitchApi twitchApi);
     }
 
     public enum PluginType

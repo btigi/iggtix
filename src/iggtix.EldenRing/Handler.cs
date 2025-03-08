@@ -16,7 +16,7 @@ namespace iggtix.EldenRing
             }
         }
 
-        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory)
+        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory, ITwitchApi twitchApi)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace iggtix.EldenRing
             }
         }
 
-        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory)
+        public async Task<string> Handle(Privmsg message, string response, IHttpClientFactory httpClientFactory, ITwitchApi twitchApi)
         {
             try
             {
