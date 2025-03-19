@@ -29,6 +29,7 @@ namespace iggtix.MoonPhase
                 var result = await apiResponse.Content.ReadAsStringAsync();
                 Console.WriteLine($"{result}");
 
+                response = response.Replace($"{{p:{Name}}}", string.Empty);
                 return response.Replace("{MoonPhase}", result, StringComparison.CurrentCultureIgnoreCase);
             }
             catch { }
