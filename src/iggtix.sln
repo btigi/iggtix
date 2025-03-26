@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.POSPrint", "iggtix.P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.Moonphase", "iggtix.Moonphase\iggtix.Moonphase.csproj", "{BB696C14-34AC-4E30-82CE-A6A615A28778}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iggtix.AndMyAxe", "iggtix.AndMyAxe\iggtix.AndMyAxe.csproj", "{A5D1FB83-48DF-9360-F7F3-66422BE01AD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{BB696C14-34AC-4E30-82CE-A6A615A28778}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB696C14-34AC-4E30-82CE-A6A615A28778}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB696C14-34AC-4E30-82CE-A6A615A28778}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5D1FB83-48DF-9360-F7F3-66422BE01AD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5D1FB83-48DF-9360-F7F3-66422BE01AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5D1FB83-48DF-9360-F7F3-66422BE01AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5D1FB83-48DF-9360-F7F3-66422BE01AD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,6 +13,7 @@ namespace iggtix.Interface
     {
         None,
         Command,
-        AllMessages
+        AllMessages,
+        NonCommandMessage,
     }
 }

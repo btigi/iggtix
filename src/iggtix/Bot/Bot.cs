@@ -43,6 +43,13 @@ namespace iggtix.Bot
         {
             await RunPluginsAll(message);
 
+            var nonCommandMessageResponse = await RunPluginsNonCommand(message);
+            if (!String.IsNullOrEmpty(nonCommandMessageResponse))
+            {
+                await message.ReplyWith(nonCommandMessageResponse);
+                return;
+            }
+
             if ((message.Content.StartsWith("#adda") || message.Content.StartsWith("#addam")) && message.Author.IsMod)
             {
                 var command = message.Content.Split(" ");
@@ -189,5 +196,26 @@ namespace iggtix.Bot
             }
             return response;
         }
+
+        private async Task<string> RunPluginsNonCommand(Privmsg message)
+        {
+            var response = string.Empty;
+            try
+            {
+                foreach (var plugin in Plugins.Where(w => w.pluginType == PluginType.NonCommandMessage))
+                {
+                    var invokeResult = plugin.method.Invoke(plugin.instance, [message, response, _httpClientFactory, _twitchApi]);
+                    if (invokeResult is Task<string> task)
+                    {
+                        response = await task;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception calling plugins: {ex.Message}");
+            }
+            return response;
+        }        
     }
 }
